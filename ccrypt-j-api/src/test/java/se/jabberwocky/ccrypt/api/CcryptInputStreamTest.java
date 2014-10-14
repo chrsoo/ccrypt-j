@@ -1,4 +1,4 @@
-package com.jabberwocky.ccrypt.api;
+package se.jabberwocky.ccrypt.api;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,11 +12,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.jabberwocky.ccrypt.api.CCryptKey;
-import com.jabberwocky.ccrypt.api.CCryptKeyFactory;
-import com.jabberwocky.ccrypt.api.CCryptKeySpec;
-import com.jabberwocky.ccrypt.api.CcryptInputStream;
-
+import se.jabberwocky.ccrypt.api.CCryptKey;
+import se.jabberwocky.ccrypt.api.CCryptKeyFactory;
+import se.jabberwocky.ccrypt.api.CCryptKeySpec;
+import se.jabberwocky.ccrypt.api.CcryptInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

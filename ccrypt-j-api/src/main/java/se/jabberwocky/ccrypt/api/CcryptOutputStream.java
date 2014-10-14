@@ -1,4 +1,4 @@
-package com.jabberwocky.ccrypt.api;
+package se.jabberwocky.ccrypt.api;
 
 import java.io.IOException;
 import java.io.OutputStream;
