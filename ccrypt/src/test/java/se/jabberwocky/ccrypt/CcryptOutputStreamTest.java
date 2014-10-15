@@ -1,4 +1,4 @@
-package se.jabberwocky.ccrypt.api;
+package se.jabberwocky.ccrypt;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,11 +15,11 @@ import org.bouncycastle.crypto.engines.RijndaelEngine;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.jabberwocky.ccrypt.api.CCryptKey;
-import se.jabberwocky.ccrypt.api.CCryptKeyFactory;
-import se.jabberwocky.ccrypt.api.CCryptKeySpec;
-import se.jabberwocky.ccrypt.api.CcryptInputStream;
-import se.jabberwocky.ccrypt.api.CcryptOutputStream;
+import se.jabberwocky.ccrypt.CCryptKey;
+import se.jabberwocky.ccrypt.CCryptKeyFactory;
+import se.jabberwocky.ccrypt.CCryptKeySpec;
+import se.jabberwocky.ccrypt.CcryptInputStream;
+import se.jabberwocky.ccrypt.CcryptOutputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

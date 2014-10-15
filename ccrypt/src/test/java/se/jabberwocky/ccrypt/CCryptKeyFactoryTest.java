@@ -1,4 +1,4 @@
-package se.jabberwocky.ccrypt.api;
+package se.jabberwocky.ccrypt;
 
 import java.security.spec.InvalidKeySpecException;
 
@@ -7,9 +7,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.jabberwocky.ccrypt.api.CCryptKey;
-import se.jabberwocky.ccrypt.api.CCryptKeyFactory;
-import se.jabberwocky.ccrypt.api.CCryptKeySpec;
+import se.jabberwocky.ccrypt.CCryptKey;
+import se.jabberwocky.ccrypt.CCryptKeyFactory;
+import se.jabberwocky.ccrypt.CCryptKeySpec;
 import static org.junit.Assert.assertNotNull;
 
 public class CCryptKeyFactoryTest {
@@ -28,7 +28,7 @@ public class CCryptKeyFactoryTest {
 
 	/**
 	 * Test method for
-	 * {@link se.jabberwocky.ccrypt.api.CCryptKeyFactory#generateKey(se.jabberwocky.ccrypt.api.CCryptKeySpec)}
+	 * {@link se.jabberwocky.ccrypt.CCryptKeyFactory#generateKey(se.jabberwocky.ccrypt.CCryptKeySpec)}
 	 * .
 	 * 
 	 * @throws InvalidKeySpecException

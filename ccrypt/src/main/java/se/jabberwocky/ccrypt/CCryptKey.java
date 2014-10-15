@@ -1,4 +1,4 @@
-package se.jabberwocky.ccrypt.api;
+package se.jabberwocky.ccrypt;
 
 import java.util.Arrays;
 

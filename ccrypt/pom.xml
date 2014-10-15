@@ -9,8 +9,8 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ccrypt-j-api</artifactId>
-	<name>ccrypt-j</name>
+	<artifactId>ccrypt</artifactId>
+	<name>ccrypt</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

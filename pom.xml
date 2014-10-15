@@ -55,7 +55,7 @@
 	</dependencyManagement>
 
 	<modules>
-		<module>ccrypt-j-api</module>
+		<module>ccrypt</module>
 	</modules>
 
 </project>
