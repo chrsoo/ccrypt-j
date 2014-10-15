@@ -3,6 +3,8 @@ package se.jabberwocky.ccrypt;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.crypto.SecretKey;
+
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.DataLengthException;
@@ -15,7 +17,7 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
 /**
  * Decrypts a ccrypt InputStream.
  */
-public class CcryptInputStream extends InputStream {
+public final class CCryptInputStream extends InputStream {
 
 	private final InputStream source;
 	private final BufferedBlockCipher blockCipher;
@@ -24,12 +26,12 @@ public class CcryptInputStream extends InputStream {
 	private int index;
 	private int bytesInBuffer;
 
-	public CcryptInputStream(InputStream source, CCryptKey key)
+	public CCryptInputStream(InputStream source, SecretKey key)
 			throws IOException {
 		this(source, key, new RijndaelEngine(256));
 	}
 
-	public CcryptInputStream(InputStream source, CCryptKey key,
+	public CCryptInputStream(InputStream source, SecretKey key,
 			RijndaelEngine rijndael) throws IOException {
 
 		if(rijndael.getBlockSize() != 32) {
@@ -99,7 +101,7 @@ public class CcryptInputStream extends InputStream {
 		return super.read(b);
 	}
 
-	// -- CcryptInputStream
+	// -- CCryptInputStream
 
 	private final void readAndDecryptCipherBlock() throws IOException {
 		bytesInBuffer = 0;

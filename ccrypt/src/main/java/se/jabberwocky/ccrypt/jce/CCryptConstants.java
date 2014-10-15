@@ -1,4 +1,4 @@
-package se.jabberwocky.ccrypt;
+package se.jabberwocky.ccrypt.jce;
 
 public interface CCryptConstants {
 

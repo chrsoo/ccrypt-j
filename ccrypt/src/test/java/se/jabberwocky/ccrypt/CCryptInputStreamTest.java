@@ -1,5 +1,8 @@
 package se.jabberwocky.ccrypt;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -7,34 +10,29 @@ import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 import org.apache.commons.io.IOUtils;
+import org.bouncycastle.crypto.engines.RijndaelEngine;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.jabberwocky.ccrypt.CCryptKey;
-import se.jabberwocky.ccrypt.CCryptKeyFactory;
-import se.jabberwocky.ccrypt.CCryptKeySpec;
-import se.jabberwocky.ccrypt.CcryptInputStream;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+public class CCryptInputStreamTest {
 
-public class CcryptInputStreamTest {
-
-	private CCryptKeySpec keySpec;
-	private CCryptKey key;
+	private SecretKey key;
 	private byte[] expected;
 	private byte[] actual;
-	private CCryptKeyFactory keyFactory;
+	private CCryptSecretKeyFactory keyFactory;
+	private RijndaelEngine engine;
 
 	@Before
 	public void setup() throws NoSuchAlgorithmException,
 			NoSuchProviderException, NoSuchPaddingException, IOException,
 			InvalidKeySpecException {
-
-		keyFactory = new CCryptKeyFactory();
-		keySpec = new CCryptKeySpec("through the looking glass");
-		key = keyFactory.engineGenerateSecret(keySpec);
+		
+		engine = new RijndaelEngine(256);
+		keyFactory = new CCryptSecretKeyFactory(engine);
+		key = keyFactory.generateKey("through the looking glass");
 
 		InputStream in = getClass().getResourceAsStream("jabberwocky.txt");
 		assertNotNull("Plaintext source cannot be null!", in);
@@ -45,7 +43,7 @@ public class CcryptInputStreamTest {
 	public void test() throws IOException {
 		InputStream in = getClass().getResourceAsStream("jabberwocky.txt.cpt");
 		assertNotNull("Ciphertext source cannot be null!", in);
-		CcryptInputStream ccryptStream = new CcryptInputStream(in, key);
+		CCryptInputStream ccryptStream = new CCryptInputStream(in, key, engine);
 		actual = IOUtils.toByteArray(ccryptStream);
 
 		String actualString = new String(actual);

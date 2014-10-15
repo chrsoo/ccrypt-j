@@ -1,8 +1,8 @@
-package se.jabberwocky.ccrypt;
+package se.jabberwocky.ccrypt.jce;
 
 import java.security.spec.KeySpec;
 
-public class CCryptKeySpec implements KeySpec {
+public final class CCryptKeySpec implements KeySpec {
 
 	private final String sharedKey;
 
@@ -31,7 +31,7 @@ public class CCryptKeySpec implements KeySpec {
 	@Override
 	public String toString() {
 		return "[algorithm: '" + CCryptConstants.CCRYPT_ALGORITHM
-				+ "; sharedKey: '" + new String(sharedKey) + "']";
+				+ "'; sharedKey: '**************']";
 	}
 
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.SecureRandom;
 
+import javax.crypto.SecretKey;
+
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.DataLengthException;
@@ -13,7 +15,12 @@ import org.bouncycastle.crypto.modes.CFBBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
-public class CcryptOutputStream extends OutputStream {
+import se.jabberwocky.ccrypt.jce.CCryptConstants;
+
+/**
+ * Encrypts an OutputStream
+ */
+public final class CCryptOutputStream extends OutputStream {
 
 	private final OutputStream sink;
 	private final BufferedBlockCipher blockCipher;
@@ -21,7 +28,12 @@ public class CcryptOutputStream extends OutputStream {
 	private final byte[] buffer = new byte[64];
 	private int index;
 
-	public CcryptOutputStream(OutputStream sink, CCryptKey key,
+	public CCryptOutputStream(OutputStream sink, SecretKey key) 
+			throws IOException {
+		this(sink, key, new RijndaelEngine(256));
+	}
+	
+	public CCryptOutputStream(OutputStream sink, SecretKey key,
 			RijndaelEngine rijndael) throws IOException {
 
 		if(rijndael.getBlockSize() != 32) {

@@ -1,4 +1,4 @@
-package se.jabberwocky.ccrypt;
+package se.jabberwocky.ccrypt.jce;
 
 import java.security.Provider;
 
@@ -18,7 +18,7 @@ public final class CCryptProvider extends Provider {
 		super(PROVIDER_NAME, PROVIDER_VERSION, PROVIDER_INFO);
 
 		put("SecretKeyFactory." + CCryptConstants.CCRYPT_ALGORITHM,
-				CCryptKeyFactory.class.getName());
+				CCryptSecretKeyFactorySpi.class.getName());
 	}
 
 }

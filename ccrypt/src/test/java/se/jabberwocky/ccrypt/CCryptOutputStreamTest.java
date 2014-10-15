@@ -1,5 +1,8 @@
 package se.jabberwocky.ccrypt;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,28 +12,20 @@ import java.security.NoSuchProviderException;
 import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.crypto.engines.RijndaelEngine;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.jabberwocky.ccrypt.CCryptKey;
-import se.jabberwocky.ccrypt.CCryptKeyFactory;
-import se.jabberwocky.ccrypt.CCryptKeySpec;
-import se.jabberwocky.ccrypt.CcryptInputStream;
-import se.jabberwocky.ccrypt.CcryptOutputStream;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-public class CcryptOutputStreamTest {
+public class CCryptOutputStreamTest {
 
 	private RijndaelEngine engine;
-	private CCryptKeySpec keySpec;
-	private CCryptKey key;
+	private SecretKey key;
 	private byte[] expected;
 	private byte[] actual;
-	private CCryptKeyFactory keyFactory;
+	private CCryptSecretKeyFactory keyFactory;
 
 	@Before
 	public void setup() throws NoSuchAlgorithmException,
@@ -38,9 +33,8 @@ public class CcryptOutputStreamTest {
 			InvalidKeySpecException {
 
 		engine = new RijndaelEngine(256);
-		keyFactory = new CCryptKeyFactory(engine);
-		keySpec = new CCryptKeySpec("through the looking glass");
-		key = keyFactory.engineGenerateSecret(keySpec);
+		keyFactory = new CCryptSecretKeyFactory(engine);
+		key = keyFactory.generateKey("through the looking glass");
 
 		InputStream in = getClass().getResourceAsStream("jabberwocky.txt");
 		assertNotNull("Plaintext source cannot be null!", in);
@@ -51,7 +45,7 @@ public class CcryptOutputStreamTest {
 	public void encrypt_decrypt() throws IOException {
 
 		ByteArrayOutputStream outbuffer = new ByteArrayOutputStream();
-		CcryptOutputStream output = new CcryptOutputStream(outbuffer, key,
+		CCryptOutputStream output = new CCryptOutputStream(outbuffer, key,
 				engine);
 
 		IOUtils.write(expected, output);
@@ -62,7 +56,7 @@ public class CcryptOutputStreamTest {
 				+ "plus 32 bytes", expected.length + 32, ciphertext.length);
 
 		ByteArrayInputStream inbuffer = new ByteArrayInputStream(ciphertext);
-		CcryptInputStream input = new CcryptInputStream(inbuffer, key);
+		CCryptInputStream input = new CCryptInputStream(inbuffer, key, engine);
 
 		actual = IOUtils.toByteArray(input);
 

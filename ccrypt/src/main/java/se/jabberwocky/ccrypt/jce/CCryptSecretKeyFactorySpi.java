@@ -1,4 +1,4 @@
-package se.jabberwocky.ccrypt;
+package se.jabberwocky.ccrypt.jce;
 
 import java.security.InvalidKeyException;
 import java.security.spec.InvalidKeySpecException;
@@ -19,11 +19,11 @@ import org.bouncycastle.crypto.params.KeyParameter;
  * <b>This factory implementation is not thread safe!</b>
  * </p>
  */
-public class CCryptKeyFactory extends SecretKeyFactorySpi {
+public class CCryptSecretKeyFactorySpi extends SecretKeyFactorySpi {
 
 	private final RijndaelEngine rijndael;
 
-	public CCryptKeyFactory(RijndaelEngine rijndael) {
+	public CCryptSecretKeyFactorySpi(RijndaelEngine rijndael) {
 		
 		if(rijndael.getBlockSize() != 32) {
 			throw new IllegalStateException(
@@ -37,7 +37,7 @@ public class CCryptKeyFactory extends SecretKeyFactorySpi {
 		this.rijndael = rijndael;
 	}
 
-	public CCryptKeyFactory() {
+	public CCryptSecretKeyFactorySpi() {
 		this(new RijndaelEngine(256));
 	}
 
@@ -49,19 +49,19 @@ public class CCryptKeyFactory extends SecretKeyFactorySpi {
 	 * </p>
 	 * 
 	 * <p>
-	 * <b>This metjhod is not thread safe!</b>
+	 * <b>This method is not thread safe!</b>
 	 * </p>
 	 * 
 	 * @param spec
 	 * @return
 	 */
 	@Override
-	public CCryptKey engineGenerateSecret(KeySpec keySpec)
+	protected CCryptKey engineGenerateSecret(KeySpec spec)
 			throws InvalidKeySpecException {
 
-		assertCCryptKeySpec(keySpec);
+		assertCCryptKeySpec(spec);
 
-		CCryptKeySpec cCryptSpec = (CCryptKeySpec) keySpec;
+		CCryptKeySpec cCryptSpec = (CCryptKeySpec) spec;
 		rijndael.reset();
 
 		// byte arrays are initialized to 0
@@ -100,7 +100,7 @@ public class CCryptKeyFactory extends SecretKeyFactorySpi {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected KeySpec engineGetKeySpec(SecretKey key, Class keySpec)
+	protected KeySpec engineGetKeySpec(SecretKey key, Class clazz)
 			throws InvalidKeySpecException {
 
 		try {
@@ -109,7 +109,7 @@ public class CCryptKeyFactory extends SecretKeyFactorySpi {
 			throw new InvalidKeySpecException(e.getMessage());
 		}
 
-		if (keySpec.equals(CCryptKeySpec.class)) {
+		if (clazz.equals(CCryptKeySpec.class)) {
 			return ((CCryptKey) key).getSpec();
 		} else {
 			throw new InvalidKeySpecException();
@@ -125,7 +125,7 @@ public class CCryptKeyFactory extends SecretKeyFactorySpi {
 		return key;
 	}
 
-	// -- CCryptKeyFactory
+	// -- CCryptSecretKeyFactorySpi
 
 	private void assertCCryptKeySpec(KeySpec keySpec)
 			throws InvalidKeySpecException {

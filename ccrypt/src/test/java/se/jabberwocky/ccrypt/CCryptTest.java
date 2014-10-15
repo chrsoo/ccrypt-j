@@ -1,5 +1,9 @@
 package se.jabberwocky.ccrypt;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
@@ -11,6 +15,7 @@ import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.commons.io.IOUtils;
@@ -27,25 +32,17 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.jabberwocky.ccrypt.CCryptKey;
-import se.jabberwocky.ccrypt.CCryptKeyFactory;
-import se.jabberwocky.ccrypt.CCryptKeySpec;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
 public class CCryptTest {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private CCryptKeySpec keySpec;
-	private CCryptKey key;
+	private SecretKey key;
 	private Cipher cipher;
 	private byte[] ciphertext;
 	private byte[] expected;
 	private byte[] actual;
 
-	private CCryptKeyFactory keyFactory;
+	private CCryptSecretKeyFactory keyFactory;
 
 	@BeforeClass
 	public static void addBouncyCastleProvider() {
@@ -67,9 +64,8 @@ public class CCryptTest {
 		expected = IOUtils.toByteArray(in);
 
 
-		keyFactory = new CCryptKeyFactory();
-		keySpec = new CCryptKeySpec("through the looking glass");
-		key = keyFactory.engineGenerateSecret(keySpec);
+		keyFactory = new CCryptSecretKeyFactory();
+		key = keyFactory.generateKey("through the looking glass");
 	}
 
 	@Test(expected = InvalidAlgorithmParameterException.class)
