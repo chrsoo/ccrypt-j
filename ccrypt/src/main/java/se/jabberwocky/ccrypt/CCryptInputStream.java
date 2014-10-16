@@ -65,7 +65,7 @@ public final class CCryptInputStream extends InputStream {
 			for(int i=0; i<CCryptConstants.CCRYPT_MAGIC_NUMBER.length; i++) {
 				if(CCryptConstants.CCRYPT_MAGIC_NUMBER[i] != plainText[i]) {
 					throw new IllegalArgumentException("InputStream Magic "
-							+ "Number does not match, wrong verion of ccrypt?");
+							+ "Number does not match, wrong version of ccrypt?");
 				}
 			}
 		}
