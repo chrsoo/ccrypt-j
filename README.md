@@ -28,6 +28,7 @@ TODO
 Prerquisites
 - JDK 1.7 or later has been installed
 - Maven 3 has been installed
+
 Steps
 - Clone the Github project:
 ```
