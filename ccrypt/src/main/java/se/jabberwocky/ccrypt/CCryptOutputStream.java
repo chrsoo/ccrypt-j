@@ -30,21 +30,8 @@ public final class CCryptOutputStream extends OutputStream {
 
 	public CCryptOutputStream(OutputStream sink, SecretKey key) 
 			throws IOException {
-		this(sink, key, new RijndaelEngine(256));
-	}
-	
-	public CCryptOutputStream(OutputStream sink, SecretKey key,
-			RijndaelEngine rijndael) throws IOException {
 
-		if(rijndael.getBlockSize() != 32) {
-			throw new IllegalStateException(
-				"CCrypt uses AES 256-bits but currently only " + 
-						rijndael.getBlockSize() * 8 + 
-						" bits is supported. Please check that unlimited "
-						+ "strength encryption has been configured for the "
-						+ "Java Runtime environment!");
-		}
-
+		RijndaelEngine rijndael = new RijndaelEngine(256);
 		this.sink = sink;
 
 		CFBBlockCipher cfbBlockCipher = new CFBBlockCipher(rijndael, 256);
@@ -114,6 +101,7 @@ public final class CCryptOutputStream extends OutputStream {
 		SecureRandom random = new SecureRandom();
 		random.nextBytes(nonce);
 
+		// imprint the magic number on the IV
 		for (int i = 0; i < CCryptConstants.CCRYPT_MAGIC_NUMBER.length; i++) {
 			nonce[i] = CCryptConstants.CCRYPT_MAGIC_NUMBER[i];
 		}

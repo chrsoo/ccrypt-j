@@ -69,4 +69,11 @@ public final class CCryptKey implements SecretKey {
 		builder.append("]");
 		return builder.toString();
 	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		// "burn after reading"
+		Arrays.fill(key, (byte) 0);
+		super.finalize();
+	}
 }

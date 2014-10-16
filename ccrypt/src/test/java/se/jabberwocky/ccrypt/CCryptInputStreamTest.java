@@ -13,7 +13,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import org.apache.commons.io.IOUtils;
-import org.bouncycastle.crypto.engines.RijndaelEngine;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,15 +22,13 @@ public class CCryptInputStreamTest {
 	private byte[] expected;
 	private byte[] actual;
 	private CCryptSecretKeyFactory keyFactory;
-	private RijndaelEngine engine;
 
 	@Before
 	public void setup() throws NoSuchAlgorithmException,
 			NoSuchProviderException, NoSuchPaddingException, IOException,
 			InvalidKeySpecException {
 		
-		engine = new RijndaelEngine(256);
-		keyFactory = new CCryptSecretKeyFactory(engine);
+		keyFactory = new CCryptSecretKeyFactory();
 		key = keyFactory.generateKey("through the looking glass");
 
 		InputStream in = getClass().getResourceAsStream("jabberwocky.txt");
@@ -43,7 +40,8 @@ public class CCryptInputStreamTest {
 	public void test() throws IOException {
 		InputStream in = getClass().getResourceAsStream("jabberwocky.txt.cpt");
 		assertNotNull("Ciphertext source cannot be null!", in);
-		CCryptInputStream ccryptStream = new CCryptInputStream(in, key, engine);
+		// TODO test with magic number validation
+		CCryptInputStream ccryptStream = new CCryptInputStream(in, key, false);
 		actual = IOUtils.toByteArray(ccryptStream);
 
 		String actualString = new String(actual);

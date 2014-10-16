@@ -23,22 +23,8 @@ public class CCryptSecretKeyFactorySpi extends SecretKeyFactorySpi {
 
 	private final RijndaelEngine rijndael;
 
-	public CCryptSecretKeyFactorySpi(RijndaelEngine rijndael) {
-		
-		if(rijndael.getBlockSize() != 32) {
-			throw new IllegalStateException(
-				"CCrypt uses AES 256-bits but currently only " + 
-						rijndael.getBlockSize() * 8 + 
-						" bits is supported. Please check that unlimited "
-						+ "strength encryption has been configured for the "
-						+ "Java Runtime environment!");
-		}
-		
-		this.rijndael = rijndael;
-	}
-
 	public CCryptSecretKeyFactorySpi() {
-		this(new RijndaelEngine(256));
+		this.rijndael = new RijndaelEngine(256);
 	}
 
 	// -- SecretKeyFactorySpi
@@ -68,7 +54,7 @@ public class CCryptSecretKeyFactorySpi extends SecretKeyFactorySpi {
 		final byte[] key = new byte[32];
 		final byte[][] doubleBuffer = new byte[2][32];
 
-		char[] sharedKey = cCryptSpec.getSharedKey();
+		char[] sharedKey = cCryptSpec.getSecret();
 
 		// round of encryption, used for calculate the double buffer index
 		int r = 0;
@@ -98,6 +84,9 @@ public class CCryptSecretKeyFactorySpi extends SecretKeyFactorySpi {
 		return new CCryptKey(cCryptSpec, doubleBuffer[b]);
 	}
 
+	/**
+	 * Only supports {@link CCryptKey} instances.
+	 */
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected KeySpec engineGetKeySpec(SecretKey key, Class clazz)
@@ -116,12 +105,15 @@ public class CCryptSecretKeyFactorySpi extends SecretKeyFactorySpi {
 		}
 	}
 
+	/**
+	 * Only supports {@link CCryptKey} instances.
+	 */
 	@Override
 	protected SecretKey engineTranslateKey(SecretKey key)
 			throws InvalidKeyException {
 
 		assertCCryptKey(key);
-
+		
 		return key;
 	}
 

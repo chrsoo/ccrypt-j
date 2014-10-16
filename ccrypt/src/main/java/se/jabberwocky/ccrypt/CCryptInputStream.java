@@ -14,6 +14,8 @@ import org.bouncycastle.crypto.modes.CFBBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
+import se.jabberwocky.ccrypt.jce.CCryptConstants;
+
 /**
  * Decrypts a ccrypt InputStream.
  */
@@ -25,47 +27,60 @@ public final class CCryptInputStream extends InputStream {
 	private byte[] plainText = new byte[32];
 	private int index;
 	private int bytesInBuffer;
+	
+	private final boolean verifyMagic;
 
 	public CCryptInputStream(InputStream source, SecretKey key)
 			throws IOException {
-		this(source, key, new RijndaelEngine(256));
+		this(source, key, true);
 	}
 
-	public CCryptInputStream(InputStream source, SecretKey key,
-			RijndaelEngine rijndael) throws IOException {
+	public CCryptInputStream(InputStream source, SecretKey key, boolean verify)
+			throws IOException {
 
-		if(rijndael.getBlockSize() != 32) {
-			throw new IllegalStateException(
-				"CCrypt uses AES 256-bits but currently only " + 
-						rijndael.getBlockSize() * 8 + 
-						" bits is supported. Please check that unlimited "
-						+ "strength encryption has been configured for the "
-						+ "Java Runtime environment!");
-		}
+		RijndaelEngine rijndael =  new RijndaelEngine(256);
+		rijndael.reset();
 
 		this.source = source;
+		this.verifyMagic = verify;
 
 		CFBBlockCipher cfb = new CFBBlockCipher(rijndael, 256);
 		blockCipher = new BufferedBlockCipher(cfb);
 
-		// Extract the IV
 		CipherParameters keyParam = new KeyParameter(key.getEncoded());
 		blockCipher.init(false, keyParam);
 		readAndDecryptCipherBlock();
-		if (bytesInBuffer < 32) {
-			throw new IOException("Could only read " + bytesInBuffer
-					+ " bytes from ccrypt InputStream for the "
-					+ "Initializing Vector (IV) before end of file was"
-					+ "reached, the ccrypt stream should be at least "
-					+ "32 bytes long, i.e. the size of the IV");
-		}
-
-		byte[] iv = cipherText.clone(); // first 32 bytes of InputStream
+		
+		byte[] iv = extractIV(keyParam);
+		assertMagic(iv);
 
 		// Initialize cipher with key and IV
 		CipherParameters params = new ParametersWithIV(keyParam, iv);
 		blockCipher.init(false, params);
 		readAndDecryptCipherBlock();
+	}
+
+	private void assertMagic(byte[] iv) {
+		if(verifyMagic) {
+			for(int i=0; i<CCryptConstants.CCRYPT_MAGIC_NUMBER.length; i++) {
+				if(CCryptConstants.CCRYPT_MAGIC_NUMBER[i] != plainText[i]) {
+					throw new IllegalArgumentException("InputStream Magic "
+							+ "Number does not match, wrong verion of ccrypt?");
+				}
+			}
+		}
+	}
+
+	protected byte[] extractIV(CipherParameters keyParam) throws IOException {
+		if (bytesInBuffer < 32) {
+			throw new IOException("Could only read " + bytesInBuffer
+					+ " bytes from ccrypt InputStream for the "
+					+ "Initializing Vector (IV) before end of file was"
+					+ "reached; the ccrypt stream should be at least "
+					+ "32 bytes long, i.e. larger than the size of the IV");
+		}
+		byte[] iv = cipherText.clone(); // first 32 bytes of InputStream
+		return iv;
 	}
 
 	// -- InputStream
@@ -89,20 +104,12 @@ public final class CCryptInputStream extends InputStream {
 		return -1;
 	}
 
-	@Override
-	public int read(byte[] b) throws IOException {
-		if (index < bytesInBuffer) {
-			for (int i = 0; i < b.length; i++) {
-
-			}
-
-		}
-
-		return super.read(b);
-	}
-
 	// -- CCryptInputStream
-
+	
+	public boolean isVerifyMagic() {
+		return verifyMagic;
+	}
+	
 	private final void readAndDecryptCipherBlock() throws IOException {
 		bytesInBuffer = 0;
 		index = 0;

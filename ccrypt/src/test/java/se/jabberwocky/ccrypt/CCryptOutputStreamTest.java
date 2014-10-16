@@ -15,13 +15,11 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import org.apache.commons.io.IOUtils;
-import org.bouncycastle.crypto.engines.RijndaelEngine;
 import org.junit.Before;
 import org.junit.Test;
 
 public class CCryptOutputStreamTest {
 
-	private RijndaelEngine engine;
 	private SecretKey key;
 	private byte[] expected;
 	private byte[] actual;
@@ -32,8 +30,7 @@ public class CCryptOutputStreamTest {
 			NoSuchProviderException, NoSuchPaddingException, IOException,
 			InvalidKeySpecException {
 
-		engine = new RijndaelEngine(256);
-		keyFactory = new CCryptSecretKeyFactory(engine);
+		keyFactory = new CCryptSecretKeyFactory();
 		key = keyFactory.generateKey("through the looking glass");
 
 		InputStream in = getClass().getResourceAsStream("jabberwocky.txt");
@@ -45,8 +42,7 @@ public class CCryptOutputStreamTest {
 	public void encrypt_decrypt() throws IOException {
 
 		ByteArrayOutputStream outbuffer = new ByteArrayOutputStream();
-		CCryptOutputStream output = new CCryptOutputStream(outbuffer, key,
-				engine);
+		CCryptOutputStream output = new CCryptOutputStream(outbuffer, key);
 
 		IOUtils.write(expected, output);
 		output.close();
@@ -56,16 +52,14 @@ public class CCryptOutputStreamTest {
 				+ "plus 32 bytes", expected.length + 32, ciphertext.length);
 
 		ByteArrayInputStream inbuffer = new ByteArrayInputStream(ciphertext);
-		CCryptInputStream input = new CCryptInputStream(inbuffer, key, engine);
+		CCryptInputStream input = new CCryptInputStream(inbuffer, key);
 
 		actual = IOUtils.toByteArray(input);
-
-		// System.out.println(ciphertext.toString());
 
 		String actualString = new String(actual);
 		String expectedString = new String(expected);
 
-		// assertEquals(expectedString.length(), actualString.length());
+		assertEquals(expectedString.length(), actualString.length());
 		assertEquals(expectedString, actualString);
 	}
 
