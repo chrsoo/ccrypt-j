@@ -18,49 +18,53 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import se.jabberwocky.ccrypt.jce.CCryptKeySpec;
+import se.jabberwocky.ccrypt.jce.CCryptSecretKeyFactorySpi;
+
 public class CCryptOutputStreamTest {
 
-	private SecretKey key;
-	private byte[] expected;
-	private byte[] actual;
-	private CCryptSecretKeyFactory keyFactory;
+    private SecretKey key;
+    private byte[] expected;
+    private byte[] actual;
+    private CCryptSecretKeyFactorySpi keyFactory;
 
-	@Before
-	public void setup() throws NoSuchAlgorithmException,
-			NoSuchProviderException, NoSuchPaddingException, IOException,
-			InvalidKeySpecException {
+    @Before
+    public void setup() throws NoSuchAlgorithmException,
+	    NoSuchProviderException, NoSuchPaddingException, IOException,
+	    InvalidKeySpecException {
 
-		keyFactory = new CCryptSecretKeyFactory();
-		key = keyFactory.generateKey("through the looking glass");
+	CCryptKeySpec spec = new CCryptKeySpec("through the looking glass");
+	keyFactory = new CCryptSecretKeyFactorySpi();
+	key = keyFactory.engineGenerateSecret(spec);
 
-		InputStream in = getClass().getResourceAsStream("jabberwocky.txt");
-		assertNotNull("Plaintext source cannot be null!", in);
-		expected = IOUtils.toByteArray(in);
-	}
+	InputStream in = getClass().getResourceAsStream("jabberwocky.txt");
+	assertNotNull("Plaintext source cannot be null!", in);
+	expected = IOUtils.toByteArray(in);
+    }
 
-	@Test
-	public void encrypt_decrypt() throws IOException {
+    @Test
+    public void encrypt_decrypt() throws IOException {
 
-		ByteArrayOutputStream outbuffer = new ByteArrayOutputStream();
-		CCryptOutputStream output = new CCryptOutputStream(outbuffer, key);
+	ByteArrayOutputStream outbuffer = new ByteArrayOutputStream();
+	CCryptOutputStream output = new CCryptOutputStream(key, outbuffer);
 
-		IOUtils.write(expected, output);
-		output.close();
-		byte[] ciphertext = outbuffer.toByteArray();
+	IOUtils.write(expected, output);
+	output.close();
+	byte[] ciphertext = outbuffer.toByteArray();
 
-		assertEquals("Ciphertext should be the same length as the plaintext "
-				+ "plus 32 bytes", expected.length + 32, ciphertext.length);
+	assertEquals("Ciphertext should be the same length as the plaintext "
+		+ "plus 32 bytes", expected.length + 32, ciphertext.length);
 
-		ByteArrayInputStream inbuffer = new ByteArrayInputStream(ciphertext);
-		CCryptInputStream input = new CCryptInputStream(inbuffer, key);
+	ByteArrayInputStream inbuffer = new ByteArrayInputStream(ciphertext);
+	CCryptInputStream input = new CCryptInputStream(key, inbuffer, true);
 
-		actual = IOUtils.toByteArray(input);
+	actual = IOUtils.toByteArray(input);
 
-		String actualString = new String(actual);
-		String expectedString = new String(expected);
+	String actualString = new String(actual);
+	String expectedString = new String(expected);
 
-		assertEquals(expectedString.length(), actualString.length());
-		assertEquals(expectedString, actualString);
-	}
+	assertEquals(expectedString.length(), actualString.length());
+	assertEquals(expectedString, actualString);
+    }
 
 }

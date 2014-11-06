@@ -2,6 +2,8 @@ package se.jabberwocky.ccrypt.jce;
 
 import java.security.Provider;
 
+import se.jabberwocky.ccrypt.CCryptConstants;
+
 public final class CCryptProvider extends Provider {
 
 	private static final long serialVersionUID = 1L;

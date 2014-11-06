@@ -24,10 +24,14 @@ public class CCryptSecretKeyFactorySpi extends SecretKeyFactorySpi {
 	private final RijndaelEngine rijndael;
 
 	public CCryptSecretKeyFactorySpi() {
-		this.rijndael = new RijndaelEngine(256);
+		this(new RijndaelEngine(256));
 	}
 
 	// -- SecretKeyFactorySpi
+
+	public CCryptSecretKeyFactorySpi(RijndaelEngine engine) {
+	    this.rijndael = engine;
+	}
 
 	/**
 	 * <p>
@@ -42,7 +46,7 @@ public class CCryptSecretKeyFactorySpi extends SecretKeyFactorySpi {
 	 * @return
 	 */
 	@Override
-	protected CCryptKey engineGenerateSecret(KeySpec spec)
+	public CCryptKey engineGenerateSecret(KeySpec spec)
 			throws InvalidKeySpecException {
 
 		assertCCryptKeySpec(spec);

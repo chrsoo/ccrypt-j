@@ -3,6 +3,8 @@ package se.jabberwocky.ccrypt.jce;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
+import se.jabberwocky.ccrypt.CCryptConstants;
+
 public final class CCryptKeySpec implements KeySpec {
 
 	private final char[] secret;
