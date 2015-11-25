@@ -44,7 +44,7 @@ mvn install
 ### Why implement ccrypt in Java?
 When integrating a java based application with a system that encrypts files using ccrypt using the command line tool can be very costly. Each time a JNI call is made the entire Java process forked, consuming large amount of memory and CPU. In addition using JNI to decrypt and then pass the decrypted file to to a normal Java class is a clunky solution. With standard IO Streams encryption and decryption is straight forward and simple.
 
-### With ccrypt versions are supperted by ccrypt-j?
+### With ccrypt versions are supported by ccrypt-j?
 Only the latest version (1.10) of ccrypt is supported. Possibly it can work with older versions but this has not been verified.
 
 ### What cipher is used in ccrypt/ccrypt-j
