@@ -17,13 +17,16 @@ TODO Manual download and addition
 
 ### Encrypting a file using ccrypt-j
 
+```
 CCrypt crypto = new CCrypt(/*PASSWORD*/);
 crypto.encrypt(/*File to be encrypted*/);
+```
 
 ### Decrypting a file using ccrypt-j
-
+```
 CCrypt crypto = new CCrypt(/*PASSWORD*/);
 crypto.decrypt(/*File to be decrypted*/);
+```
 
 ## Building from source
 
