@@ -27,41 +27,45 @@ public final class CCryptOutputStream extends OutputStream {
     private int index;
 
     public CCryptOutputStream(SecretKey key, OutputStream sink)
-	    throws IOException {
-	this(new RijndaelEngine(256), key, sink);
+            throws IOException {
+        this(new RijndaelEngine(256), key, sink);
     }
 
     CCryptOutputStream(RijndaelEngine engine, SecretKey key, OutputStream sink)
-	    throws IOException {
+            throws IOException {
 
-	this.sink = sink;
+        this.sink = sink;
 
-	CFBBlockCipher cfbBlockCipher = new CFBBlockCipher(engine, 256);
+        CFBBlockCipher cfbBlockCipher = new CFBBlockCipher(engine, 256);
+        blockCipher = new BufferedBlockCipher(cfbBlockCipher);
 
-	blockCipher = new BufferedBlockCipher(cfbBlockCipher);
+        KeyParameter keyParam = new KeyParameter(key.getEncoded());
 
-	KeyParameter keyParam = new KeyParameter(key.getEncoded());
-	byte[] iv = createIV(keyParam);
+        byte[] nonce = createNonce();
+        byte[] iv = new byte[32];
+        engine.init(true, keyParam);
+        engine.processBlock(nonce, 0, iv, 0);
 
-	CipherParameters params = new ParametersWithIV(keyParam, iv);
-	blockCipher.init(true, params);
+        sink.write(iv);
 
-	sink.write(iv);
-	index = 0;
+        CipherParameters params = new ParametersWithIV(keyParam, iv);
+        blockCipher.init(true, params);
+
+        index = 0;
     }
 
     // -- OutputStream
 
     @Override
     public void write(int b) throws IOException {
-	index += blockCipher.processByte((byte) b, buffer, index);
-	if (index == buffer.length) {
-	    flush();
-	} else if (index > buffer.length) {
-	    throw new IllegalStateException("Cipher buffer overflow, "
-		    + "buffer size must not exceed block size of 32 bytes "
-		    + "but was " + index);
-	}
+        index += blockCipher.processByte((byte) b, buffer, index);
+        if (index == buffer.length) {
+            flush();
+        } else if (index > buffer.length) {
+            throw new IllegalStateException("Cipher buffer overflow, "
+                    + "buffer size must not exceed block size of 32 bytes "
+                    + "but was " + index);
+        }
     }
 
     /**
@@ -73,26 +77,28 @@ public final class CCryptOutputStream extends OutputStream {
      */
     @Override
     public void flush() throws IOException {
-	if (index > 0) {
-	    sink.write(buffer, 0, index);
-	    index = 0;
-	}
-	sink.flush();
+        if (index > 0) {
+            sink.write(buffer, 0, index);
+            index = 0;
+        }
+        sink.flush();
     }
 
     @Override
     public void close() throws IOException {
-	super.close();
-	try {
-	    index += blockCipher.doFinal(buffer, index);
-	    sink.write(buffer, 0, index);
-	} catch (DataLengthException | IllegalStateException
-		| InvalidCipherTextException e) {
-	    throw new IOException("Could not write the final bytes of "
-		    + "ciphertext", e);
-	} finally {
-	    sink.close();
-	}
+        super.close();
+        try {
+            index += blockCipher.doFinal(buffer, index);
+            sink.write(buffer, 0, index);
+            index = 0;
+        } catch (DataLengthException | IllegalStateException
+                | InvalidCipherTextException e) {
+            throw new IOException("Could not write the final bytes of "
+                    + "ciphertext", e);
+        } finally {
+            flush();
+            sink.close();
+        }
 
     }
 
@@ -120,27 +126,18 @@ public final class CCryptOutputStream extends OutputStream {
      * 
      * http://ccrypt.sourceforge.net/ccrypt.html
      */
-    private byte[] createIV(CipherParameters keyParam) {
+    private byte[] createNonce() {
 
-	blockCipher.init(true, keyParam);
+        byte[] nonce = new byte[32];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(nonce);
 
-	byte[] nonce = new byte[32];
-	SecureRandom random = new SecureRandom();
-	random.nextBytes(nonce);
+        // imprint the magic number on the nonce
+        for (int i = 0; i < CCryptConstants.CCRYPT_MAGIC_BYTES.length; i++) {
+            nonce[i] = CCryptConstants.CCRYPT_MAGIC_BYTES[i];
+        }
 
-	// imprint the magic number on the nonce
-	for (int i = 0; i < CCryptConstants.CCRYPT_MAGIC_BYTES.length; i++) {
-	    nonce[i] = CCryptConstants.CCRYPT_MAGIC_BYTES[i];
-	}
-
-	byte[] iv = new byte[32];
-	int i = blockCipher.processBytes(nonce, 0, 32, iv, 0);
-	if (i != 32) {
-	    throw new IllegalStateException("Expected 32 bytes to be "
-		    + "encrypted but instead " + i + " bytes were encrypted");
-	}
-
-	return iv;
+        return nonce;
     }
 
 }
