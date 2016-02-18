@@ -47,9 +47,9 @@ public class CCryptIT {
 	assertNotNull(cipherTextURI);
 
 	ProcessBuilder builder = new ProcessBuilder(CCRYPT_BINARY, "--key",
-		"through the looking glass", "-m", "-c", "-d", 
+		"through the looking glass", "-m", "-c", "-d",
 		cipherTextURI.getFile());
-	
+
 	ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 	Process ccrypt = builder.start();
 	IOUtils.copy(ccrypt.getInputStream(), buffer);
@@ -62,7 +62,7 @@ public class CCryptIT {
     @Test
     public void encrypt_file_and_delete() throws IOException,
 	    InvalidKeySpecException, InterruptedException {
-	
+
 	URL url = getClass().getResource("jabberwocky.txt");
 	assertNotNull(url);
 	File plain = File.createTempFile("jabberwocky-", ".txt");
@@ -72,7 +72,7 @@ public class CCryptIT {
 
 	FileUtils.copyURLToFile(url, plain);
 
-	
+
 	CCrypt cCrypt = new CCrypt("through the looking glass");
 	cCrypt.encrypt(plain);
 
@@ -87,7 +87,7 @@ public class CCryptIT {
 	IOUtils.copy(ccrypt.getInputStream(), buffer);
 	IOUtils.copy(ccrypt.getErrorStream(), System.err);
 	ccrypt.waitFor();
-	
+
 	assertEquals("Wrong exit value", 0, ccrypt.exitValue());
 
 
@@ -100,36 +100,36 @@ public class CCryptIT {
 	assertEquals("ccrypt exited abnormally", 0, ccrypt.exitValue());
 
     }
-    
+
     @Test @Ignore
     public void check_magic() throws IOException,
     InvalidKeySpecException, InterruptedException {
-	
+
 	URL url = getClass().getResource("jabberwocky.txt");
 	assertNotNull(url);
 	File plain = File.createTempFile("jabberwocky-", ".txt");
 	plain.deleteOnExit();
-	
+
 	FileUtils.copyURLToFile(url, plain);
-	
+
 	ProcessBuilder builder = new ProcessBuilder(CCRYPT_BINARY, "--key",
 		"through the looking glass", "-e", plain.getAbsolutePath());
-	
+
 	ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 	Process ccrypt = builder.start();
 	IOUtils.copy(ccrypt.getInputStream(), buffer);
 	IOUtils.copy(ccrypt.getErrorStream(), System.err);
 	ccrypt.waitFor();
-	
+
 	assertEquals("Wrong exit value", 0, ccrypt.exitValue());
-	
+
 	String output = buffer.toString();
 	String plaintext = IOUtils.toString(url);
-	
+
 	System.out.println(output);
 	assertEquals(plaintext, output);
-	
-	
+
+
     }
 
 }

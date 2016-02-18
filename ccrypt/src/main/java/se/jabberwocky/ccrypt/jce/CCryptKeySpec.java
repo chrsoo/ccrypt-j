@@ -2,6 +2,7 @@ package se.jabberwocky.ccrypt.jce;
 
 import java.security.spec.KeySpec;
 import java.util.Arrays;
+import java.util.List;
 
 import se.jabberwocky.ccrypt.CCryptConstants;
 
@@ -20,7 +21,14 @@ public final class CCryptKeySpec implements KeySpec {
 	 * @param secret the secret shared between the encryptor and the decryptor.
 	 */
 	public CCryptKeySpec(char[] secret) {
-		this.secret = secret.clone();
+
+		int length = secret.length;
+		while(length%32 != 0)length++;
+		char[] padded = new char[length];
+		Arrays.fill(padded, (char)0);
+		for(int i = 0; i< secret.length; i++)
+			padded[i] = secret[i];
+		this.secret = padded;
 	}
 	
 	/**
@@ -31,10 +39,10 @@ public final class CCryptKeySpec implements KeySpec {
 	 * @param secret
 	 */
 	public CCryptKeySpec(String secret) {
+		this(secret.trim().toCharArray());
 		if(secret == null || secret.trim().isEmpty()) {
 			throw new IllegalArgumentException("The shared key must not be blank");
 		}
-		this.secret = secret.trim().toCharArray();
 	}
 	
 	/**

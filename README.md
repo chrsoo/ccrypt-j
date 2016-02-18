@@ -17,11 +17,16 @@ TODO Manual download and addition
 
 ### Encrypting a file using ccrypt-j
 
-TODO
+```
+CCrypt crypto = new CCrypt(/*PASSWORD*/);
+crypto.encrypt(/*File to be encrypted*/);
+```
 
 ### Decrypting a file using ccrypt-j
-
-TODO
+```
+CCrypt crypto = new CCrypt(/*PASSWORD*/);
+crypto.decrypt(/*File to be decrypted*/);
+```
 
 ## Building from source
 
@@ -48,4 +53,4 @@ When integrating a java based application with a system that encrypts files usin
 Only the latest version (1.10) of ccrypt is supported. Possibly it can work with older versions but this has not been verified.
 
 ### What cipher is used in ccrypt/ccrypt-j
-The Rijndael 256-bit cipher with CFB is used. This is the same that is used in AES but there are minor incompatibilities between the AES standard and the ccrypt implementation. In particular a 256 bit IV is used instead of the 128 bit IV mandated by AES (or at least it is the only IV supported by JCE...)
+The Rijndael 256-bit cipher with CFB is used. This is the same that is used in AES but there are minor incompatibilities between the AES standard and the ccrypt implementation. In particular a 256 bit IV is used instead of the 128 bit IV mandated by AES (or at least it is the only IV supported by JCE...).

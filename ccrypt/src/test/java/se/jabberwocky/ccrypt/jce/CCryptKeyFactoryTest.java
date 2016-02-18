@@ -28,7 +28,7 @@ public class CCryptKeyFactoryTest {
 
 	/**
 	 * Test method for
-	 * {@link se.jabberwocky.ccrypt.jce.CCryptSecretKeyFactorySpi#generateKey(se.jabberwocky.ccrypt.jce.CCryptKeySpec)}
+	 * {@link se.jabberwocky.ccrypt.jce.CCryptSecretKeyFactorySpi#engineGenerateSecret(se.jabberwocky.ccrypt.jce.CCryptKeySpec)}
 	 * .
 	 * 
 	 * @throws InvalidKeySpecException
